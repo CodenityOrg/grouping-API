@@ -6,6 +6,9 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const mongoose = require('mongoose');
+const cors = require('cors');
+
 
 const app = express();
 
@@ -16,6 +19,7 @@ mongoose.connect('mongodb://localhost:27017/groupingapp', err => {
   console.log("Connected !")
 });
 
+app.use(cors());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

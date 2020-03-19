@@ -5,28 +5,32 @@ const haversine = require('haversine');
 const spotSchema = new Schema({
     latitude: Number,
     longitude: Number,
-    quantity: Array
+    qtys: Array,
+    average: {
+        type: Number,
+        default: 0
+    }
 });
 
-spotSchema.statics.nearest = async function({latitude, longitude}) {
+spotSchema.statics.nearest = async function({latitude, longitude, quantity, userId}) {
     const spots = await this.find({});
     const end = {
         latitude,
         longitude
     };
 
-    const foundSpot = spots.find((spot) => 
+    const foundSpot = spots.find((spot) =>
         haversine(
         {
             latitude: spot.latitude,
             longitude: spot.longitude
-        }, 
-        end, 
+        },
+        end,
         { unit: 'meter'}) < 200
     );
 
     if (!foundSpot) {
-        return await this.create({ latitude, longitude, quantity: [0] });
+        return await this.create({ latitude, longitude, qtys: [{ quantity, userId }] });
     }
 
     return foundSpot;
