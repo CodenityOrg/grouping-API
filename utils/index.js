@@ -1,5 +1,5 @@
 module.exports = {
-    tryCatch(fn) {
+    async tryCatch(fn) {
         let result;
         let error;
 

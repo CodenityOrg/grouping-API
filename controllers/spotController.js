@@ -2,15 +2,16 @@ const Spot = require('../models/Spot');
 
 const {tryCatch} = require('../utils');
 
+const average = (...nums) => nums.reduce((acc, val) => acc + val, 0) /nums.length;
 
 module.exports = {
     async create(req, res) {
-        const {latitude, longitude, count = 1} = req.body;
-        const [error, result] = await tryCatch(Spot.create({
-            latitude,
-            longitude,
-            count
-        }));
+        const {latitude, longitude, quantity = 0} = req.body;
+        
+        const spot = await Spot.nearest({ latitude, longitude });
+        const newQuantity = Math.floor(average([...spot.quantity, quantity]));
+        spot.quantity = newQuantity;
+        const [error, result] = await tryCatch(spot.save());
 
         if (error) {
             return res.sendStatus(500);
