@@ -1,16 +1,19 @@
+const User = require('../models/User');
+const {tryCatch} = require('../utils');
+const jwt = require("jsonwebtoken");
+
 module.exports = {
     async oauthLogin(req, res) {
         // TODO: Implement integration with Google and check oauth type (google or facebook)
         // TODO: Validate facebook access token
-        const { first_name, last_name, email, accessToken } = req.body;
+        const { name, email, accessToken } = req.body;
         const userParams = {
-            firstName: first_name,
-            lastName: last_name,
+            name,
             email,
             accessToken
         };
 
-        const { result: user } = await tryCatch(
+        const [error, user] = await tryCatch(
             User.findOrCreate(userParams, { email })
         );
 
@@ -19,7 +22,8 @@ module.exports = {
                 message: "No se pudo iniciar sesion"
             });
         }
-        user.token = jwt.sign(user._id.toString(), config.secret);
-        return res.json(user);
+
+        console.log(jwt.sign(user._id.toString(), 'sssshhhhhhhhh'))
+        return res.json({...user.toJSON(), token: jwt.sign(user._id.toString(), 'sssshhhhhhhhh')});
     }
 }

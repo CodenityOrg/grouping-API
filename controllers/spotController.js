@@ -2,22 +2,44 @@ const Spot = require('../models/Spot');
 
 const {tryCatch} = require('../utils');
 
-const average = (...nums) => nums.reduce((acc, val) => acc + val.quantity, 0) /nums.length;
+const average = (...nums) =>  nums.reduce((acc, val) => acc + val.quantity, 0) /nums.length;
+const getHoursDiffBetweenDates = (date1, date2) => Math.abs(date1 - date2) / 36e5;
+
 module.exports = {
     async create(req, res) {
         const {latitude, longitude, quantity = 0} = req.body;
-        const spot = await Spot.nearest({
-            latitude, longitude,
-            quantity,
-            userId: "dasdsa"
-        });
+        let spot;
+        const spots = await Spot.find({});
+        const end = {
+            latitude,
+            longitude
+        };
+        spot = spots.find((spot) =>
+            haversine(
+            {
+                latitude: spot.latitude,
+                longitude: spot.longitude
+            },
+            end,
+            { unit: 'meter'}) < 50
+        );
+
+        if (!spot) {
+            spot = await this.create({ latitude, longitude });
+        }
+
+        const qtyByUser = spot.qtys.find(qty => qty.userId === userId);
+
+        if (getHoursDiffBetweenDates(qtyByUser.createdAt, new Date) < 1) {
+            return res.sendStatus(200);
+        }
 
         spot.qtys.push({
-            quantity,
+            quantity: Number(quantity),
             userId: "adsdasdas"
         });
 
-        spot.average = Math.floor(average([...spot.qtys, quantity]));
+        spot.average = Math.round(average(...spot.qtys));
         const [error, result] = await tryCatch(spot.save());
 
         if (error) {
@@ -41,6 +63,7 @@ module.exports = {
         const [error, result] = await tryCatch(Spot.find({}));
 
         if (error) {
+            console.log(error)
             return res.sendStatus(500);
         }
 

@@ -4,11 +4,11 @@ module.exports = {
         let error;
 
         try {
-            result = await fn();
+            result = await fn;
         } catch (e) {
             error = e;
         }
 
-        return [result, error];
+        return [error, result];
     }
 }
