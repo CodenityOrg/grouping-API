@@ -31,8 +31,11 @@ module.exports = {
 
         return res.json(result);
     },
-    async getOne() {
+    async getByLocation(req, res) {
+        const {latitude, longitude} = req.query;
+        console.log(latitude, longitude)
         let spot = await Spot.nearest(latitude, longitude, "", false);
+        console.log("spot", spot)
         return res.json(spot);
     },
     async list (req, res) {
