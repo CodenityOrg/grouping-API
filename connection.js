@@ -14,7 +14,6 @@ const options = {
   reconnectInterval: 500,
   connectTimeoutMS: 10000,
 };
-.
 
 mongoose.connect(`mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`, options, err => {
   if (err) {
